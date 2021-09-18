@@ -1,18 +1,26 @@
-import logo from './assets/images/logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import styled from 'styled-components';
+import ThreeViews from 'components/ThreeViews';
+import StatusBar from 'components/StatusBar';
+import WebSocketConnection from './components/WebSocketConnection';
+
+const AppStyles = styled.div`
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    overflow: auto;
+`;
 
 function App(): JSX.Element {
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <Counter />
-                <p>
-                    Edit <code>src/App.tsx</code> and save to reload.
-                </p>
-            </header>
-        </div>
+        <>
+            <WebSocketConnection />
+
+            <AppStyles>
+                <ThreeViews />
+                <StatusBar />
+            </AppStyles>
+        </>
     );
 }
 
