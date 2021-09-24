@@ -1,8 +1,8 @@
-import { configureStore, ThunkAction, Action, AnyAction, combineReducers } from '@reduxjs/toolkit';
+import { configureStore, AnyAction, combineReducers } from '@reduxjs/toolkit';
+import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import aliceDataReducer from 'features/aliceData/aliceDataSlice';
 import counterReducer, { incrementIfOddEpic } from 'features/counter/counterSlice';
 import webSocketReducer from 'features/webSocket/webSocketSlice';
-import { combineEpics, createEpicMiddleware, Epic } from 'redux-observable';
 
 const rootReducer = combineReducers({
     aliceData: aliceDataReducer,
@@ -12,7 +12,7 @@ const rootReducer = combineReducers({
 
 const rootEpic = combineEpics(incrementIfOddEpic);
 
-const epicMiddleware = createEpicMiddleware<AnyAction, AnyAction, RootState>();
+const epicMiddleware = createEpicMiddleware<AnyAction, AnyAction, ReturnType<typeof rootReducer>>();
 
 export const store = configureStore({
     reducer: rootReducer,
@@ -20,13 +20,3 @@ export const store = configureStore({
 });
 
 epicMiddleware.run(rootEpic);
-
-export type AppDispatch = typeof store.dispatch;
-export type RootState = ReturnType<typeof rootReducer>;
-export type AppThunk<ReturnType = void> = ThunkAction<
-    ReturnType,
-    RootState,
-    unknown,
-    Action<string>
->;
-export type AppEpic = Epic<AnyAction, AnyAction, RootState>;

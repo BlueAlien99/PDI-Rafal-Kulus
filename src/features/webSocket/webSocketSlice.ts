@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from 'app/store';
+import { RootState } from 'AppTypes';
 
 export interface WebSocketState {
     status: 'connected' | 'connection_error' | 'disconnected';

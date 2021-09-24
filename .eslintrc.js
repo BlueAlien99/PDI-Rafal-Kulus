@@ -9,6 +9,11 @@ const importResolverSettings = {
 const eslintRules = {
     'no-console': 'warn',
     'no-void': 'off',
+    'import/order': [
+        'error',
+        { groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'] },
+    ],
+    'import/no-unresolved': 'off',
 };
 
 const prettierRules = {
@@ -39,6 +44,7 @@ module.exports = {
             extends: [
                 'wesbos',
                 'eslint:recommended',
+                'plugin:import/typescript',
                 'plugin:@typescript-eslint/recommended',
                 'plugin:@typescript-eslint/recommended-requiring-type-checking',
             ],

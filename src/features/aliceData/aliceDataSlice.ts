@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from 'AppTypes';
 import { AliceEvent } from 'utils/decoders/eventDecoder';
-import { RootState } from 'app/store';
 
 const initialState: AliceEvent = {
     id: 0,
