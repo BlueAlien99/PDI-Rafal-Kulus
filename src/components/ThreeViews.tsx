@@ -1,13 +1,16 @@
 import * as THREE from 'three';
 import styled from 'styled-components';
+import { OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
 import { useAppSelector } from 'hooks/redux';
 import { selectAliceData } from 'features/aliceData/aliceDataSlice';
-import View3D from './ThreeViews/View3D';
 import Line from './ThreeComponents/Line';
+import GenericView from './ThreeViews/GenericView';
 
 const ThreeViewsStyles = styled.div`
     width: 100%;
     height: 100%;
+    min-width: 0;
+    min-height: 0;
     display: grid;
     grid-template-columns: 2fr 1fr;
     grid-template-rows: 1fr 1fr;
@@ -31,9 +34,25 @@ function ThreeViews(): JSX.Element {
 
     return (
         <ThreeViewsStyles>
-            <View3D className="main-view">{scene}</View3D>
-            <p>R-Phi View</p>
-            <p>Rho-Z View</p>
+            <GenericView label="3D View" className="main-view">
+                <PerspectiveCamera
+                    fov={60}
+                    near={1}
+                    far={5000}
+                    position={[1000, 1000, 1000]}
+                    makeDefault
+                />
+                <OrbitControls />
+                {scene}
+            </GenericView>
+            <GenericView label="R-Phi View">
+                <OrthographicCamera near={1} far={5000} position={[0, 0, 1000]} makeDefault />
+                {scene}
+            </GenericView>
+            <GenericView label="Rho-Z View">
+                <OrthographicCamera near={1} far={5000} position={[1000, 0, 0]} makeDefault />
+                {scene}
+            </GenericView>
         </ThreeViewsStyles>
     );
 }
