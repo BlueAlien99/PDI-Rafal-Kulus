@@ -2,11 +2,13 @@ import { configureStore, AnyAction, combineReducers } from '@reduxjs/toolkit';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import aliceDataReducer from 'features/aliceData/aliceDataSlice';
 import counterReducer, { incrementIfOddEpic } from 'features/counter/counterSlice';
+import stylesReducer from 'features/styles/stylesSlice';
 import webSocketReducer from 'features/webSocket/webSocketSlice';
 
 const rootReducer = combineReducers({
     aliceData: aliceDataReducer,
     counter: counterReducer,
+    styles: stylesReducer,
     webSocket: webSocketReducer,
 });
 

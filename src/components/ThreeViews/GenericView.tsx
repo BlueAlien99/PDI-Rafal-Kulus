@@ -1,8 +1,10 @@
 import { Canvas } from '@react-three/fiber';
 import { ComponentProps, ReactNode } from 'react';
 import styled from 'styled-components';
+import { useAppSelector } from 'hooks/redux';
+import { selectCurrentStyle } from 'features/styles/stylesSlice';
 
-const ViewStyles = styled.div`
+const ViewStyles = styled.div<{ textColor: string }>`
     position: relative;
     min-width: 0;
     min-height: 0;
@@ -11,7 +13,7 @@ const ViewStyles = styled.div`
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
-        color: white;
+        color: ${props => props.textColor};
         z-index: 100;
     }
 `;
@@ -24,7 +26,6 @@ const rendererProps: CanvasProp<'gl'> = {
 
 const onCreated: CanvasProp<'onCreated'> = state => {
     state.camera.lookAt(0, 0, 0);
-    state.gl.setClearColor('#0A1833');
 };
 
 interface Props {
@@ -34,10 +35,13 @@ interface Props {
 }
 
 function GenericView({ label, className, children }: Props): JSX.Element {
+    const style = useAppSelector(selectCurrentStyle);
+
     return (
-        <ViewStyles className={className}>
+        <ViewStyles className={className} textColor={style.overlayColor}>
             <span id="label">{label}</span>
             <Canvas frameloop="demand" gl={rendererProps} onCreated={onCreated}>
+                <color attach="background" args={[style.clearColor]} />
                 {children}
             </Canvas>
         </ViewStyles>

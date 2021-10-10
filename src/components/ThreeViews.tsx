@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
 import { useAppSelector } from 'hooks/redux';
 import { selectAliceData } from 'features/aliceData/aliceDataSlice';
+import { selectCurrentStyle } from 'features/styles/stylesSlice';
 import Line from './ThreeComponents/Line';
 import GenericView from './ThreeViews/GenericView';
 
@@ -25,11 +26,12 @@ const ThreeViewsStyles = styled.div`
 
 function ThreeViews(): JSX.Element {
     const aliceData = useAppSelector(selectAliceData);
+    const style = useAppSelector(selectCurrentStyle);
 
     const scene = aliceData.tracks.map(track => {
         const points = track.points.map(point => new THREE.Vector3(...point));
 
-        return <Line key={track.id} points={points} color="#ffb732" />;
+        return <Line key={track.id} points={points} color={style.trackColor} />;
     });
 
     return (
