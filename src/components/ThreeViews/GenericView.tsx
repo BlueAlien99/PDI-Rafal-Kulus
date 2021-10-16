@@ -19,6 +19,8 @@ const ViewStyles = styled.div<{ textColor: string }>`
     }
 
     .actions {
+        display: flex;
+        flex-direction: column;
         position: absolute;
         right: 0;
         opacity: 0.67;
@@ -43,24 +45,37 @@ interface Props {
 }
 
 function GenericView({ label, className, children }: Props): JSX.Element {
-    const [screenshotRequested, setScreenshotRequested] = useState(false);
+    const [screenshot, setScreenshot] = useState({
+        requested: false,
+        variant: '' as ComponentProps<typeof TakeScreenshot>['variant'],
+    });
+
+    const requestPNGScreenshot = () => setScreenshot({ requested: true, variant: 'png' });
+    const requestSVGScreenshot = () => setScreenshot({ requested: true, variant: 'svg' });
+    const screenshotTaken = () => setScreenshot(prevState => ({ ...prevState, requested: false }));
 
     const style = useAppSelector(selectCurrentStyle);
-
-    const requestScreenshot = () => setScreenshotRequested(true);
-    const screenshotTaken = () => setScreenshotRequested(false);
 
     return (
         <ViewStyles className={className} textColor={style.overlayColor}>
             <span className="label">{label}</span>
             <div className="actions">
-                <button type="button" onClick={requestScreenshot}>
+                <button type="button" onClick={requestPNGScreenshot}>
                     Save as PNG
+                </button>
+                <button type="button" onClick={requestSVGScreenshot}>
+                    Save as SVG
                 </button>
             </div>
             <Canvas frameloop="demand" gl={rendererProps} onCreated={onCreated}>
                 <color attach="background" args={[style.clearColor]} />
-                {screenshotRequested && <TakeScreenshot label={label} done={screenshotTaken} />}
+                {screenshot.requested && (
+                    <TakeScreenshot
+                        variant={screenshot.variant}
+                        label={label}
+                        done={screenshotTaken}
+                    />
+                )}
                 {children}
             </Canvas>
         </ViewStyles>
