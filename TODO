@@ -1,6 +1,4 @@
 - customize orbit controls
-- verify 144 fps
-- add Stats
 - screenshots (combined, set res)
 - sidebar tabs
 - theming (alpha, save and load user themes)
@@ -14,3 +12,4 @@
 - Select component (and move to form dir)
 - useNestedForm(s)
 - eject CRA
+- own Stats impl
