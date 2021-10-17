@@ -3,7 +3,7 @@ import { ComponentProps, ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { useAppSelector } from 'hooks/redux';
 import { selectCurrentStyle } from 'features/styles/stylesSlice';
-import TakeScreenshot from './TakeScreenshot';
+import TakeScreenshot from './three/TakeScreenshot';
 
 const ViewStyles = styled.div<{ textColor: string }>`
     position: relative;

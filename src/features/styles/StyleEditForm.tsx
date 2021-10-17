@@ -1,7 +1,7 @@
 import { FormEvent, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'hooks/redux';
 import useForm from 'hooks/useForm';
-import Input from 'components/Input';
+import Input from 'components/form/Input';
 import BasicFormStyles from 'styles/BasicFormStyles';
 import { currentStyleUpdated, selectCurrentStyle } from './stylesSlice';
 

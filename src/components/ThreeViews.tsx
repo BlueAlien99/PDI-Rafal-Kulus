@@ -4,8 +4,8 @@ import { OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-thr
 import { useAppSelector } from 'hooks/redux';
 import { selectAliceData } from 'features/aliceData/aliceDataSlice';
 import { selectCurrentStyle } from 'features/styles/stylesSlice';
-import Line from './ThreeComponents/Line';
-import GenericView from './ThreeViews/GenericView';
+import Line from './three/Line';
+import GenericView from './GenericView';
 
 const ThreeViewsStyles = styled.div`
     width: 100%;

@@ -3,13 +3,11 @@
 - sidebar tabs
 - theming (alpha, save and load user themes)
 - customize camera (user)
-- move types and others to devdeps
 - decoder tests
-- remove useless dirs
 - timeline
 - global styles
 - reset camera position
-- Select component (and move to form dir)
+- Select component
 - useNestedForm(s)
 - eject CRA
 - own Stats impl
