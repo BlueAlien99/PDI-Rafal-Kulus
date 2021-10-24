@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useAppSelector } from 'hooks/redux';
 import { selectCurrentStyle } from 'features/styles/stylesSlice';
 import TakeScreenshot from './three/TakeScreenshot';
+import CameraManager, { SupportedCameras } from './three/CameraManager';
 
 const ViewStyles = styled.div<{ textColor: string }>`
     position: relative;
@@ -23,8 +24,12 @@ const ViewStyles = styled.div<{ textColor: string }>`
         flex-direction: column;
         position: absolute;
         right: 0;
-        opacity: 0.67;
+        opacity: 0.17;
         z-index: 100;
+
+        &:hover {
+            opacity: 0.67;
+        }
     }
 `;
 
@@ -40,11 +45,12 @@ const onCreated: CanvasProp<'onCreated'> = state => {
 
 interface Props {
     label: string;
+    camera: SupportedCameras;
     className?: string;
     children?: ReactNode;
 }
 
-function GenericView({ label, className, children }: Props): JSX.Element {
+function GenericView({ label, camera, className, children }: Props): JSX.Element {
     const [screenshot, setScreenshot] = useState({
         requested: false,
         variant: '' as ComponentProps<typeof TakeScreenshot>['variant'],
@@ -53,6 +59,13 @@ function GenericView({ label, className, children }: Props): JSX.Element {
     const requestPNGScreenshot = () => setScreenshot({ requested: true, variant: 'png' });
     const requestSVGScreenshot = () => setScreenshot({ requested: true, variant: 'svg' });
     const screenshotTaken = () => setScreenshot(prevState => ({ ...prevState, requested: false }));
+
+    const [cameraAction, setCameraAction] = useState({
+        reset: false,
+    });
+
+    const requestCameraReset = () => setCameraAction({ reset: true });
+    const cameraReset = () => setCameraAction({ reset: false });
 
     const style = useAppSelector(selectCurrentStyle);
 
@@ -66,16 +79,23 @@ function GenericView({ label, className, children }: Props): JSX.Element {
                 <button type="button" onClick={requestSVGScreenshot}>
                     Save as SVG
                 </button>
+                <button type="button" onClick={requestCameraReset}>
+                    Reset camera
+                </button>
             </div>
             <Canvas frameloop="demand" gl={rendererProps} onCreated={onCreated}>
                 <color attach="background" args={[style.clearColor]} />
-                {screenshot.requested && (
-                    <TakeScreenshot
-                        variant={screenshot.variant}
-                        label={label}
-                        done={screenshotTaken}
-                    />
-                )}
+                <TakeScreenshot
+                    requested={screenshot.requested}
+                    variant={screenshot.variant}
+                    label={label}
+                    done={screenshotTaken}
+                />
+                <CameraManager
+                    defaultCamera={camera}
+                    resetRequested={cameraAction.reset}
+                    resetDone={cameraReset}
+                />
                 {children}
             </Canvas>
         </ViewStyles>

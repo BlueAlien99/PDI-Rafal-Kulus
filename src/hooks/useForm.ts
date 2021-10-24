@@ -6,7 +6,7 @@ interface UseForm<T> {
     resetForm: () => void;
 }
 
-export default function useForm<T>(initial: T): UseForm<T> {
+function useForm<T>(initial: T): UseForm<T> {
     const [inputs, setInputs] = useState<T>(initial);
 
     const handleChange: UseForm<T>['handleChange'] = useCallback(e => {
@@ -26,3 +26,5 @@ export default function useForm<T>(initial: T): UseForm<T> {
         resetForm,
     };
 }
+
+export default useForm;

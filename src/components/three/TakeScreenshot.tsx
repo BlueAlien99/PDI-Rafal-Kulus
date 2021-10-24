@@ -1,7 +1,8 @@
 import { Camera, OrthographicCamera, PerspectiveCamera, WebGLRenderer } from 'three';
 import { SVGRenderer } from 'three/examples/jsm/renderers/SVGRenderer';
-import { RootState, Size, useFrame } from '@react-three/fiber';
+import { RootState, Size, useThree } from '@react-three/fiber';
 import { toISOStringWithTimezone } from 'utils/date';
+import useActionRequest, { UseActionRequestProps } from 'hooks/useActionRequest';
 
 const getUpdatedCamera = (camera: Readonly<Camera>, source: Size, target: Size): Camera => {
     const updatedCamera = camera.clone();
@@ -59,14 +60,16 @@ const getSVGImageUrl = (rootState: RootState, targetSize: Size) => {
     return URL.createObjectURL(imageBlob);
 };
 
-interface Props {
+interface Props extends Omit<UseActionRequestProps, 'action'> {
     variant: 'png' | 'svg';
     label: string;
-    done: () => void;
 }
 
-function TakeScreenshot({ variant, label, done }: Props): null {
-    useFrame(rootState => {
+function TakeScreenshot({ requested, variant, label, done }: Props): null {
+    const getRootState = useThree(state => state.get);
+
+    const takeScreenshot = () => {
+        const rootState = getRootState();
         const targetSize: Size = { width: 1920, height: 1080 };
 
         let imageUrl = '';
@@ -86,9 +89,9 @@ function TakeScreenshot({ variant, label, done }: Props): null {
         link.click();
 
         render(rootState.gl, rootState, rootState.size);
+    };
 
-        done();
-    }, 1);
+    useActionRequest({ requested, action: takeScreenshot, done });
 
     return null;
 }

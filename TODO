@@ -1,13 +1,20 @@
+- reactor model!
 - customize orbit controls
-- screenshots (combined, set res)
 - sidebar tabs
 - theming (alpha, save and load user themes)
-- customize camera (user)
+- customize camera (user), 
 - decoder tests
 - timeline
 - global styles
-- reset camera position
 - Select component
 - useNestedForm(s)
 - eject CRA
 - own Stats impl
+
+- slice for ss res + form
+- portal for settings for cameras
+- getUpdatedCamera refactor? (Camera type, setting aspect ratio etc., useCallback)
+- saving camera and restoring
+- combined ss; ss dl using redux-observable
+- camera slice - fov?
+- threeviews - camera naming and constructors

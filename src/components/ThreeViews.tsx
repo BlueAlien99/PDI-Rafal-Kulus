@@ -1,6 +1,6 @@
-import * as THREE from 'three';
 import styled from 'styled-components';
-import { OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
+import { OrthographicCamera, PerspectiveCamera, Vector3 } from 'three';
 import { useAppSelector } from 'hooks/redux';
 import { selectAliceData } from 'features/aliceData/aliceDataSlice';
 import { selectCurrentStyle } from 'features/styles/stylesSlice';
@@ -29,30 +29,45 @@ function ThreeViews(): JSX.Element {
     const style = useAppSelector(selectCurrentStyle);
 
     const scene = aliceData.tracks.map(track => {
-        const points = track.points.map(point => new THREE.Vector3(...point));
+        const points = track.points.map(point => new Vector3(...point));
 
         return <Line key={track.id} points={points} color={style.trackColor} />;
     });
 
     return (
         <ThreeViewsStyles>
-            <GenericView label="3D View" className="main-view">
-                <PerspectiveCamera
-                    fov={60}
-                    near={1}
-                    far={5000}
-                    position={[1000, 1000, 1000]}
-                    makeDefault
-                />
+            <GenericView
+                label="3D View"
+                className="main-view"
+                camera={(() => {
+                    const camera = new PerspectiveCamera(60, 1, 1, 5000);
+                    camera.position.set(1000, 1000, 1000);
+                    return camera;
+                })()}
+            >
                 <OrbitControls />
                 {scene}
             </GenericView>
-            <GenericView label="R-Phi View">
-                <OrthographicCamera near={1} far={5000} position={[0, 0, 1000]} makeDefault />
+            <GenericView
+                label="R-Phi View"
+                camera={(() => {
+                    const camera = new OrthographicCamera(0, 0, 0, 0, 1, 5000);
+                    camera.position.set(0, 0, 1000);
+                    return camera;
+                })()}
+            >
+                <OrbitControls enableRotate={false} enableDamping={false} />
                 {scene}
             </GenericView>
-            <GenericView label="Rho-Z View">
-                <OrthographicCamera near={1} far={5000} position={[1000, 0, 0]} makeDefault />
+            <GenericView
+                label="Rho-Z View"
+                camera={(() => {
+                    const camera = new OrthographicCamera(0, 0, 0, 0, 1, 5000);
+                    camera.position.set(1000, 0, 0);
+                    return camera;
+                })()}
+            >
+                <OrbitControls enableRotate={false} enableDamping={false} />
                 {scene}
             </GenericView>
         </ThreeViewsStyles>
