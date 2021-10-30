@@ -1,35 +1,38 @@
 import { Canvas } from '@react-three/fiber';
-import { ComponentProps, ReactNode, useState } from 'react';
+import { ComponentProps, ReactNode, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
+import { OrbitControls } from '@react-three/drei';
 import { useAppSelector } from 'hooks/redux';
 import { selectCurrentStyle } from 'features/styles/stylesSlice';
 import TakeScreenshot from './three/TakeScreenshot';
-import CameraManager, { SupportedCameras } from './three/CameraManager';
+import CameraManager from './three/CameraManager';
 
 const ViewStyles = styled.div<{ textColor: string }>`
     position: relative;
     min-width: 0;
     min-height: 0;
 
-    .label {
+    .overlay {
         position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
         color: ${props => props.textColor};
-        z-index: 100;
-    }
-
-    .actions {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        right: 0;
         opacity: 0.17;
         z-index: 100;
 
         &:hover {
             opacity: 0.67;
         }
+    }
+
+    .label {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .actions {
+        display: flex;
+        flex-direction: column;
+        right: 0;
     }
 `;
 
@@ -45,12 +48,12 @@ const onCreated: CanvasProp<'onCreated'> = state => {
 
 interface Props {
     label: string;
-    camera: SupportedCameras;
+    controlsProps?: ComponentProps<typeof OrbitControls>;
     className?: string;
     children?: ReactNode;
 }
 
-function GenericView({ label, camera, className, children }: Props): JSX.Element {
+function GenericView({ label, controlsProps, className, children }: Props): JSX.Element {
     const [screenshot, setScreenshot] = useState({
         requested: false,
         variant: '' as ComponentProps<typeof TakeScreenshot>['variant'],
@@ -60,27 +63,21 @@ function GenericView({ label, camera, className, children }: Props): JSX.Element
     const requestSVGScreenshot = () => setScreenshot({ requested: true, variant: 'svg' });
     const screenshotTaken = () => setScreenshot(prevState => ({ ...prevState, requested: false }));
 
-    const [cameraAction, setCameraAction] = useState({
-        reset: false,
-    });
-
-    const requestCameraReset = () => setCameraAction({ reset: true });
-    const cameraReset = () => setCameraAction({ reset: false });
-
     const style = useAppSelector(selectCurrentStyle);
+
+    const cameraControlsRef = useRef<HTMLDivElement | null>(null);
+    const orbitControlsRef = useRef<OrbitControlsImpl | null>(null);
 
     return (
         <ViewStyles className={className} textColor={style.overlayColor}>
-            <span className="label">{label}</span>
-            <div className="actions">
+            <div className="overlay camera" ref={cameraControlsRef} />
+            <span className="overlay label">{label}</span>
+            <div className="overlay actions">
                 <button type="button" onClick={requestPNGScreenshot}>
                     Save as PNG
                 </button>
                 <button type="button" onClick={requestSVGScreenshot}>
                     Save as SVG
-                </button>
-                <button type="button" onClick={requestCameraReset}>
-                    Reset camera
                 </button>
             </div>
             <Canvas frameloop="demand" gl={rendererProps} onCreated={onCreated}>
@@ -91,11 +88,14 @@ function GenericView({ label, camera, className, children }: Props): JSX.Element
                     label={label}
                     done={screenshotTaken}
                 />
-                <CameraManager
-                    defaultCamera={camera}
-                    resetRequested={cameraAction.reset}
-                    resetDone={cameraReset}
-                />
+                {cameraControlsRef.current && orbitControlsRef.current && (
+                    <CameraManager
+                        cameraControlsContainer={cameraControlsRef.current}
+                        orbitControls={orbitControlsRef.current}
+                    />
+                )}
+                {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+                <OrbitControls ref={orbitControlsRef} {...controlsProps} />
                 {children}
             </Canvas>
         </ViewStyles>
