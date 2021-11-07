@@ -1,17 +1,32 @@
+--- main features
+
 - reactor model!
 - sidebar tabs
-- theming (alpha, save and load user themes)
-- customize camera (user), 
-- decoder tests
+- theming (alpha)
 - timeline
-- global styles
 - Select component
 - useNestedForm(s)
+
+
+
+--- should do
+
+- theming (color ranges)
+- customize camera (user) and show info (fov, zoom)
+- global styles
+- decoder tests
+
+
+
+--- probably won't have time
+
 - eject CRA
 - own Stats impl
+- remove three-stdlib
+- theming (save and load user themes)
 
-- slice for ss res + form
-- getUpdatedCamera refactor? (Camera type, setting aspect ratio etc., useCallback)
-- combined ss; ss dl using redux-observable
-- camera slice - fov?
-- threeviews - camera naming and constructors
+
+
+--- NOW
+
+

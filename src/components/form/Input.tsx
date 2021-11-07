@@ -1,13 +1,25 @@
 import { DetailedHTMLProps, InputHTMLAttributes } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-const LabelStyles = styled.label`
+interface LabelStylesProps {
+    charWidth?: number;
+}
+
+const LabelStyles = styled.label<LabelStylesProps>`
     display: block;
+
+    input {
+        ${({ charWidth }) =>
+            charWidth &&
+            css`
+                width: ${charWidth}em;
+            `}
+    }
 `;
 
-type AnyObject = Record<string, string>;
+type AnyObject = Record<string, string | number>;
 
-interface OwnProps<T extends AnyObject> {
+interface OwnProps<T extends AnyObject> extends LabelStylesProps {
     label: string;
     inputs: T;
     name: keyof T & string;
@@ -23,10 +35,11 @@ export default function Input<T extends AnyObject>({
     label,
     inputs,
     name,
+    charWidth,
     ...rest
 }: Props<T>): JSX.Element {
     return (
-        <LabelStyles>
+        <LabelStyles charWidth={charWidth}>
             {label}
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <input value={inputs[name]} name={name} {...rest} />

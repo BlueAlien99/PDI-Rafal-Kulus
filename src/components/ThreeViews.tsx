@@ -37,6 +37,7 @@ function ThreeViews(): JSX.Element {
     return (
         <ThreeViewsStyles>
             <GenericView
+                viewId={0}
                 label="3D View"
                 className="main-view"
                 controlsProps={{ dampingFactor: 0.1 }}
@@ -51,6 +52,7 @@ function ThreeViews(): JSX.Element {
                 {scene}
             </GenericView>
             <GenericView
+                viewId={1}
                 label="R-Phi View"
                 controlsProps={{ enableRotate: false, enableDamping: false }}
             >
@@ -58,6 +60,7 @@ function ThreeViews(): JSX.Element {
                 {scene}
             </GenericView>
             <GenericView
+                viewId={2}
                 label="Rho-Z View"
                 controlsProps={{ enableRotate: false, enableDamping: false }}
             >

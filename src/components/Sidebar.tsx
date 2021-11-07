@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import StyleSelectionForm from 'features/styles/StyleSelectionForm';
 import StyleEditForm from 'features/styles/StyleEditForm';
+import ScreenshotForm from 'features/screenshot/ScreenshotForm';
 import Stats from './Stats';
 
 const SidebarStyles = styled.div`
@@ -15,6 +16,8 @@ function Sidebar(): JSX.Element {
             <StyleSelectionForm />
             <hr />
             <StyleEditForm />
+            <hr />
+            <ScreenshotForm />
         </SidebarStyles>
     );
 }

@@ -1,11 +1,14 @@
 import { Canvas } from '@react-three/fiber';
-import { ComponentProps, ReactNode, useRef, useState } from 'react';
+import { ComponentProps, ReactNode, useRef } from 'react';
 import styled from 'styled-components';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
-import { OrbitControls } from '@react-three/drei';
-import { useAppSelector } from 'hooks/redux';
+import { OrbitControls, useContextBridge } from '@react-three/drei';
+import { ReactReduxContext } from 'react-redux';
+import { useAppDispatch, useAppSelector } from 'hooks/redux';
 import { selectCurrentStyle } from 'features/styles/stylesSlice';
-import TakeScreenshot from './three/TakeScreenshot';
+import { screenshotRequested } from 'features/screenshot/screenshotSlice';
+import { SupportedViewIds } from 'features/screenshot/dimensions';
+import ScreenshotManager from './three/ScreenshotManager';
 import CameraManager from './three/CameraManager';
 
 const ViewStyles = styled.div<{ textColor: string }>`
@@ -47,26 +50,26 @@ const onCreated: CanvasProp<'onCreated'> = state => {
 };
 
 interface Props {
+    viewId: SupportedViewIds;
     label: string;
     controlsProps?: ComponentProps<typeof OrbitControls>;
     className?: string;
     children?: ReactNode;
 }
 
-function GenericView({ label, controlsProps, className, children }: Props): JSX.Element {
-    const [screenshot, setScreenshot] = useState({
-        requested: false,
-        variant: '' as ComponentProps<typeof TakeScreenshot>['variant'],
-    });
+function GenericView({ viewId, label, controlsProps, className, children }: Props): JSX.Element {
+    const dispatch = useAppDispatch();
 
-    const requestPNGScreenshot = () => setScreenshot({ requested: true, variant: 'png' });
-    const requestSVGScreenshot = () => setScreenshot({ requested: true, variant: 'svg' });
-    const screenshotTaken = () => setScreenshot(prevState => ({ ...prevState, requested: false }));
+    const requestPNGScreenshot = () => dispatch(screenshotRequested({ viewId, variant: 'png' }));
+    const requestSVGScreenshot = () => dispatch(screenshotRequested({ viewId, variant: 'svg' }));
 
     const style = useAppSelector(selectCurrentStyle);
 
-    const cameraControlsRef = useRef<HTMLDivElement | null>(null);
-    const orbitControlsRef = useRef<OrbitControlsImpl | null>(null);
+    // TODO: firefox
+    const cameraControlsRef = useRef<HTMLDivElement>(null);
+    const orbitControlsRef = useRef<OrbitControlsImpl>(null);
+
+    const ContextBridge = useContextBridge(ReactReduxContext);
 
     return (
         <ViewStyles className={className} textColor={style.overlayColor}>
@@ -80,14 +83,11 @@ function GenericView({ label, controlsProps, className, children }: Props): JSX.
                     Save as SVG
                 </button>
             </div>
-            <Canvas frameloop="demand" gl={rendererProps} onCreated={onCreated}>
+            <Canvas linear frameloop="demand" gl={rendererProps} onCreated={onCreated}>
                 <color attach="background" args={[style.clearColor]} />
-                <TakeScreenshot
-                    requested={screenshot.requested}
-                    variant={screenshot.variant}
-                    label={label}
-                    done={screenshotTaken}
-                />
+                <ContextBridge>
+                    <ScreenshotManager viewId={viewId} label={label} />
+                </ContextBridge>
                 {cameraControlsRef.current && orbitControlsRef.current && (
                     <CameraManager
                         cameraControlsContainer={cameraControlsRef.current}

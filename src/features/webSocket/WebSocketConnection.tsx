@@ -11,7 +11,7 @@ import {
 import { aliceEventReceived } from 'features/aliceData/aliceDataSlice';
 import { propOfType } from 'utils/decoders/utils/utils';
 import { eventDecoder } from 'utils/decoders/eventDecoder';
-import { fromSocketEvent } from 'utils/observables';
+import { fromSocketEvent } from 'utils/rxjs/observables';
 
 function WebSocketConnection(): null {
     const dispatch = useAppDispatch();
