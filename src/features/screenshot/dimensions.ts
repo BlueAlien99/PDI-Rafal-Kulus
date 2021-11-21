@@ -28,34 +28,34 @@ export type ScreenshotDimensions = {
 };
 
 export const getScreenshotDimensions = ({ width, height }: Size): ScreenshotDimensions => {
-    const source = {
-        sx: width / (hDiv * 2),
-        sy: 0,
-        sWidth: (width * (hDiv - 1)) / hDiv,
-        sHeight: height,
+    const getElementDimensions = (widthRatio: number, heightRatio: number) => {
+        const normalizedWidthRatio = widthRatio / heightRatio;
+
+        return {
+            dWidth: width * widthRatio,
+            dHeight: height * heightRatio,
+            sx: (width * (1 - normalizedWidthRatio)) / 2,
+            sy: 0,
+            sWidth: width * normalizedWidthRatio,
+            sHeight: height,
+        };
     };
 
     return {
         0: {
-            ...source,
             dx: 0,
             dy: 0,
-            dWidth: (width * (hDiv - 1)) / hDiv,
-            dHeight: height,
+            ...getElementDimensions((hDiv - 1) / hDiv, 1),
         },
         1: {
-            ...source,
             dx: (width * (hDiv - 1)) / hDiv,
             dy: 0,
-            dWidth: width / hDiv,
-            dHeight: height / vDiv,
+            ...getElementDimensions(1 / hDiv, (vDiv - 1) / vDiv),
         },
         2: {
-            ...source,
             dx: (width * (hDiv - 1)) / hDiv,
-            dy: height / vDiv,
-            dWidth: width / hDiv,
-            dHeight: height / vDiv,
+            dy: (height * (vDiv - 1)) / vDiv,
+            ...getElementDimensions(1 / hDiv, 1 / vDiv),
         },
     };
 };

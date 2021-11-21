@@ -1,6 +1,6 @@
-export const download = (filename: string, data: string): void => {
+export const download = (filename: string, url: string): void => {
     const link = document.createElement('a');
-    link.href = data;
+    link.href = url;
     link.download = filename;
     link.click();
 };

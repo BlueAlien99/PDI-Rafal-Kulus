@@ -8,6 +8,7 @@ import {
     screenshotSizeUpdated,
     selectScreenshotSize,
 } from './screenshotSlice';
+import { hDiv, vDiv } from './dimensions';
 
 function ScreenshotForm(): JSX.Element {
     const size = useAppSelector(selectScreenshotSize);
@@ -30,12 +31,12 @@ function ScreenshotForm(): JSX.Element {
     const requestSVGScreenshot = () =>
         dispatch(screenshotRequested({ viewId: -1, variant: 'svg' }));
 
-    // TODO: warning
-
     return (
         <>
             <BasicFormStyles onSubmit={handleOnSubmit}>
-                <span>For best quality...</span>
+                <span>
+                    For best quality: <br /> W = {hDiv}n and H = {vDiv}n
+                </span>
                 <Input
                     label="Width"
                     type="number"

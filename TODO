@@ -1,10 +1,8 @@
 --- main features
 
 - reactor model!
-- sidebar tabs
 - theming (alpha)
 - timeline
-- Select component
 - useNestedForm(s)
 
 
@@ -12,7 +10,8 @@
 --- should do
 
 - theming (color ranges)
-- customize camera (user) and show info (fov, zoom)
+- customize camera (user)
+- sidebar tabs
 - global styles
 - decoder tests
 
@@ -29,4 +28,8 @@
 
 --- NOW
 
-
+- Select component
+- remove unsued files
+- adapt for new data format
+- show info (fov, zoom)
+- show basic ali data info

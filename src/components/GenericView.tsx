@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { ComponentProps, ReactNode, useRef } from 'react';
+import { ComponentProps, ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { OrbitControls, useContextBridge } from '@react-three/drei';
@@ -65,15 +65,16 @@ function GenericView({ viewId, label, controlsProps, className, children }: Prop
 
     const style = useAppSelector(selectCurrentStyle);
 
-    // TODO: firefox
-    const cameraControlsRef = useRef<HTMLDivElement>(null);
-    const orbitControlsRef = useRef<OrbitControlsImpl>(null);
+    const [cameraControlsContainer, setCameraControlsContainer] = useState<HTMLDivElement | null>(
+        null
+    );
+    const [orbitControls, setOrbitControls] = useState<OrbitControlsImpl | null>(null);
 
     const ContextBridge = useContextBridge(ReactReduxContext);
 
     return (
         <ViewStyles className={className} textColor={style.overlayColor}>
-            <div className="overlay camera" ref={cameraControlsRef} />
+            <div className="overlay camera" ref={setCameraControlsContainer} />
             <span className="overlay label">{label}</span>
             <div className="overlay actions">
                 <button type="button" onClick={requestPNGScreenshot}>
@@ -88,14 +89,14 @@ function GenericView({ viewId, label, controlsProps, className, children }: Prop
                 <ContextBridge>
                     <ScreenshotManager viewId={viewId} label={label} />
                 </ContextBridge>
-                {cameraControlsRef.current && orbitControlsRef.current && (
+                {cameraControlsContainer && orbitControls && (
                     <CameraManager
-                        cameraControlsContainer={cameraControlsRef.current}
-                        orbitControls={orbitControlsRef.current}
+                        cameraControlsContainer={cameraControlsContainer}
+                        orbitControls={orbitControls}
                     />
                 )}
                 {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-                <OrbitControls ref={orbitControlsRef} {...controlsProps} />
+                <OrbitControls ref={setOrbitControls} {...controlsProps} />
                 {children}
             </Canvas>
         </ViewStyles>

@@ -89,7 +89,7 @@ function ScreenshotManager({ viewId, label }: Props): null {
                     requestId,
                     viewId,
                     variant,
-                    imageData: getImageUrl(variant, getRootState(), targetSize),
+                    imageUrl: getImageUrl(variant, getRootState(), targetSize),
                     filename: generateFilename(new Date(), label, variant),
                 })
             );

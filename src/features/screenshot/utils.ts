@@ -1,7 +1,6 @@
 import { toISOStringWithTimezone } from 'utils/date';
 
 export const SVGElementToUrl = (node: SVGElement): string => {
-    // TODO: naming
     const imageData = new XMLSerializer().serializeToString(node);
     const imageBlob = new Blob([imageData], {
         type: 'image/svg+xml;charset=utf-8',

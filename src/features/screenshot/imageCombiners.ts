@@ -35,21 +35,17 @@ export const combinePNGs = (images: HTMLImageElement[], size: Size): HTMLCanvasE
     return canvas;
 };
 
+const repositionSVG = (svg: string, dim: ScreenshotDimensions[0]): string => {
+    const regexWidth = /width="[^"]*"/;
+    const regexHeight = /height="[^"]*"/;
+
+    return svg
+        .replace(regexWidth, `x="${dim.dx}" width="${dim.dWidth}"`)
+        .replace(regexHeight, `y="${dim.dy}" height="${dim.dHeight}"`);
+};
+
 export const combineSVGs = (images: string[], { width, height }: Size): SVGSVGElement => {
     const style = /(?<=style=")[^"]*"/.exec(images[0]);
-
-    const rgw = /width="[^"]*"/;
-    const rgh = /height="[^"]*"/;
-
-    images[0] = images[0]
-        .replace(rgw, `x="${0}" width="${(width * 2) / 3}"`)
-        .replace(rgh, `y="${0}" height="${height}"`);
-    images[1] = images[1]
-        .replace(rgw, `x="${(width * 2) / 3}" width="${(width * 1) / 3}"`)
-        .replace(rgh, `y="${0}" height="${height / 2}"`);
-    images[2] = images[2]
-        .replace(rgw, `x="${(width * 2) / 3}" width="${(width * 1) / 3}"`)
-        .replace(rgh, `y="${height / 2}" height="${height / 2}"`);
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
@@ -57,7 +53,13 @@ export const combineSVGs = (images: string[], { width, height }: Size): SVGSVGEl
     svg.setAttribute('height', `${height}`);
     svg.setAttribute('style', style ? style[0] : '');
 
-    svg.innerHTML = images.join('');
+    const dims = getScreenshotDimensions({ width, height });
+
+    svg.innerHTML = [
+        repositionSVG(images[0], dims[0]),
+        repositionSVG(images[1], dims[1]),
+        repositionSVG(images[2], dims[2]),
+    ].join('');
 
     return svg;
 };

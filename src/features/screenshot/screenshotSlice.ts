@@ -60,14 +60,36 @@ export interface ScreenshotTakenPayload {
     requestId: number;
     viewId: number;
     variant: SupportedVariants;
-    // TODO: rename to imageUrl
-    imageData: string;
+    imageUrl: string;
     filename: string;
 }
 
 export const screenshotTaken = createAction<ScreenshotTakenPayload>('screenshot/screenshotTaken');
 
-// TODO: WTF?!?!?!
+const combineImages =
+    ({ request: { id, viewId, variant }, size }: ScreenshotState) =>
+    async (imageUrls: string[]) => {
+        let imageUrl = '';
+
+        if (variant === 'png') {
+            const images = await Promise.all(imageUrls.map(UrlToImageElement));
+            imageUrl = combinePNGs(images, size).toDataURL('image/png');
+        } else if (variant === 'svg') {
+            const images = await Promise.all(imageUrls.map(UrlToBlobText));
+            imageUrl = SVGElementToUrl(combineSVGs(images, size));
+        } else {
+            const _exhaustiveCheck: never = variant;
+            return _exhaustiveCheck;
+        }
+
+        return screenshotTaken({
+            requestId: id,
+            viewId,
+            variant,
+            imageUrl,
+            filename: generateFilename(new Date(), 'Combined', variant),
+        });
+    };
 
 export const screenshotTakenEpic: AppEpic = (action$, state$) =>
     action$.pipe(
@@ -83,48 +105,18 @@ export const screenshotTakenEpic: AppEpic = (action$, state$) =>
                     conditionalSource =>
                         conditionalSource.pipe(
                             bufferCount(3),
-                            mergeMap(actions => {
-                                const imagesData = actions
+                            map(actions =>
+                                actions
                                     .map(action => action.payload)
                                     .sort((a, b) => a.viewId - b.viewId)
-                                    .map(payload => payload.imageData);
-
-                                const { size } = state$.value.screenshot;
-                                const filename = generateFilename(new Date(), 'Combined', variant);
-
-                                if (variant === 'png') {
-                                    return Promise.all(imagesData.map(UrlToImageElement)).then(
-                                        images =>
-                                            screenshotTaken({
-                                                requestId: id,
-                                                viewId,
-                                                variant,
-                                                imageData: combinePNGs(images, size).toDataURL(
-                                                    'image/png'
-                                                ),
-                                                filename,
-                                            })
-                                    );
-                                }
-                                if (variant === 'svg') {
-                                    return Promise.all(imagesData.map(UrlToBlobText)).then(images =>
-                                        screenshotTaken({
-                                            requestId: id,
-                                            viewId,
-                                            variant,
-                                            imageData: SVGElementToUrl(combineSVGs(images, size)),
-                                            filename,
-                                        })
-                                    );
-                                }
-                                const _exhaustiveCheck: never = variant;
-                                return _exhaustiveCheck;
-                            })
+                                    .map(payload => payload.imageUrl)
+                            ),
+                            mergeMap(combineImages(state$.value.screenshot))
                         )
                 )
             )
         ),
-        tap(({ payload: { imageData, filename } }) => download(filename, imageData)),
+        tap(({ payload: { imageUrl, filename } }) => download(filename, imageUrl)),
         filter(() => false)
     );
 
