@@ -1,12 +1,21 @@
 import * as R from 'ramda';
 import { trackDecoder } from './trackDecoder';
-import { numberOr, arrayOr } from './utils/typeOr';
+import { numberOr, arrayOr, stringOr } from './utils/typeOr';
 import { propOfType } from './utils/utils';
 
-const tracksDecoder = R.pipe(propOfType('fTracks', arrayOr()), R.map(trackDecoder));
+const workflowDateDecoder = R.pipe(
+    propOfType('workflowParameters', stringOr()),
+    R.split(' t:'),
+    R.head,
+    stringOr(),
+    str => str || 'unknown'
+);
+
+const tracksDecoder = R.pipe(propOfType('mTracks', arrayOr()), R.map(trackDecoder));
 
 export const eventDecoder = R.applySpec({
-    id: propOfType('fUniqueID', numberOr()),
+    workflowDate: workflowDateDecoder,
+    trackCount: propOfType('trackCount', numberOr()),
     tracks: tracksDecoder,
 });
 

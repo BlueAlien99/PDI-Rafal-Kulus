@@ -4,3 +4,12 @@ export const download = (filename: string, url: string): void => {
     link.download = filename;
     link.click();
 };
+
+export const getSequenceGenerator = (): (() => number) => {
+    let i = -1;
+
+    return () => {
+        i += 1;
+        return i;
+    };
+};

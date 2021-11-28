@@ -18,7 +18,10 @@ const epicMiddleware = createEpicMiddleware<AnyAction, AnyAction, ReturnType<typ
 
 export const store = configureStore({
     reducer: rootReducer,
-    middleware: getDefaultMiddleware => getDefaultMiddleware().concat(epicMiddleware),
+    middleware: getDefaultMiddleware =>
+        getDefaultMiddleware({
+            serializableCheck: { ignoredPaths: ['aliceData.tracks'] },
+        }).concat(epicMiddleware),
 });
 
 epicMiddleware.run(rootEpic);

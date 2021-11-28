@@ -1,4 +1,5 @@
 import * as R from 'ramda';
+import { getSequenceGenerator } from 'utils/utils';
 import { arrayOfType, propOfType, zip3 } from './utils/utils';
 import { numberOr } from './utils/typeOr';
 
@@ -6,12 +7,12 @@ const singleDimensionDecoder = (prop: string) => propOfType(prop, arrayOfType(nu
 
 const pointsDecoder = (data: unknown) =>
     zip3(
-        singleDimensionDecoder('fPolyX')(data),
-        singleDimensionDecoder('fPolyY')(data),
-        singleDimensionDecoder('fPolyZ')(data)
+        singleDimensionDecoder('mPolyX')(data),
+        singleDimensionDecoder('mPolyY')(data),
+        singleDimensionDecoder('mPolyZ')(data)
     );
 
 export const trackDecoder = R.applySpec({
-    id: propOfType('fUniqueID', numberOr()),
+    id: getSequenceGenerator(),
     points: pointsDecoder,
 });

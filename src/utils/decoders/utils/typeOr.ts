@@ -5,6 +5,11 @@ export const numberOr: TypeOr<number> =
     x =>
         typeof x === 'number' ? x : fallback;
 
+export const stringOr: TypeOr<string> =
+    (fallback = '') =>
+    x =>
+        typeof x === 'string' ? x : fallback;
+
 export const arrayOr: TypeOr<unknown[]> =
     (fallback = []) =>
     (x): unknown[] =>

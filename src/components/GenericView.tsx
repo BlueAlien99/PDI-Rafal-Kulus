@@ -19,11 +19,11 @@ const ViewStyles = styled.div<{ textColor: string }>`
     .overlay {
         position: absolute;
         color: ${props => props.textColor};
-        opacity: 0.17;
+        opacity: 0.2;
         z-index: 100;
 
         &:hover {
-            opacity: 0.67;
+            opacity: 0.8;
         }
     }
 

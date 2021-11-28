@@ -1,11 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'AppTypes';
-import { AliceEvent } from 'utils/decoders/eventDecoder';
+import { AliceEvent, eventDecoder } from 'utils/decoders/eventDecoder';
 
-const initialState: AliceEvent = {
-    id: 0,
-    tracks: [],
-};
+const initialState: AliceEvent = eventDecoder({});
 
 export const aliceDataSlice = createSlice({
     name: 'aliceData',
