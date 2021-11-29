@@ -11,7 +11,7 @@ import { SupportedViewIds } from 'features/screenshot/dimensions';
 import ScreenshotManager from './three/ScreenshotManager';
 import CameraManager from './three/CameraManager';
 
-const ViewStyles = styled.div<{ textColor: string }>`
+const ViewStyles = styled.div<{ textColor: string; backgroundColor: string }>`
     position: relative;
     min-width: 0;
     min-height: 0;
@@ -19,6 +19,7 @@ const ViewStyles = styled.div<{ textColor: string }>`
     .overlay {
         position: absolute;
         color: ${props => props.textColor};
+        background-color: ${props => props.backgroundColor};
         opacity: 0.2;
         z-index: 100;
 
@@ -73,7 +74,11 @@ function GenericView({ viewId, label, controlsProps, className, children }: Prop
     const ContextBridge = useContextBridge(ReactReduxContext);
 
     return (
-        <ViewStyles className={className} textColor={style.overlayColor}>
+        <ViewStyles
+            className={className}
+            textColor={style.overlayColor}
+            backgroundColor={style.clearColor}
+        >
             <div className="overlay camera" ref={setCameraControlsContainer} />
             <span className="overlay label">{label}</span>
             <div className="overlay actions">

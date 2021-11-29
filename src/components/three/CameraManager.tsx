@@ -1,4 +1,4 @@
-import { Size, useThree } from '@react-three/fiber';
+import { Size, useFrame, useThree } from '@react-three/fiber';
 import { useCallback, useState } from 'react';
 import { OrthographicCamera, PerspectiveCamera } from 'three';
 import { render } from 'react-dom';
@@ -99,10 +99,21 @@ function CameraManager({ cameraControlsContainer, orbitControls }: Props): null 
         invalidate();
     };
 
+    const getCameraStats = () => ({
+        fov: camera instanceof PerspectiveCamera ? camera.fov : 0,
+        zoom: camera.zoom.toFixed(2),
+    });
+
+    const [cameraStats, setCameraStats] = useState(getCameraStats());
+
+    useFrame(() => setCameraStats(getCameraStats()));
+
     if (cameraControlsContainer) {
         render(
             <ControlsStyles>
                 <span className="panel-label">Camera controls</span>
+                {camera instanceof PerspectiveCamera && <div>FOV: {cameraStats.fov} deg</div>}
+                {camera instanceof OrthographicCamera && <div>Zoom: {cameraStats.zoom}x</div>}
                 <div className="btn-pair">
                     <button type="button" onClick={handleSave}>
                         Save
