@@ -1,5 +1,5 @@
 import * as R from 'ramda';
-import { map } from 'rxjs';
+import { map, tap } from 'rxjs';
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useAppDispatch } from 'hooks/redux';
@@ -12,6 +12,17 @@ import { aliceEventReceived } from 'features/aliceData/aliceDataSlice';
 import { propOfType } from 'utils/decoders/utils/utils';
 import { eventDecoder } from 'utils/decoders/eventDecoder';
 import { fromSocketEvent } from 'utils/rxjs/observables';
+import { store } from 'app/store';
+
+declare global {
+    interface Window {
+        sss: number;
+        kkk: number;
+        resss: {
+            [key: string]: number[];
+        };
+    }
+}
 
 function WebSocketConnection(): null {
     const dispatch = useAppDispatch();
@@ -25,6 +36,14 @@ function WebSocketConnection(): null {
 
         fromSocketEvent(socket, 'track')
             .pipe(
+                tap(() => {
+                    const ttt = store.getState().aliceData.trackCount;
+                    window.resss = window.resss || {};
+                    window.resss[ttt] = window.resss[ttt] || [];
+                    window.resss[ttt].push(window.kkk - window.sss);
+
+                    window.sss = performance.now();
+                }),
                 map(propOfType('sJ', R.identity)),
                 map(data => eventDecoder(data)),
                 map(aliceEventReceived)

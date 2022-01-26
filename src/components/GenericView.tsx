@@ -1,4 +1,4 @@
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { ComponentProps, ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
@@ -58,6 +58,50 @@ interface Props {
     children?: ReactNode;
 }
 
+function Inside({
+    children,
+    controlsProps,
+    cameraControlsContainer,
+    orbitControls,
+    viewId,
+    label,
+    clearColor,
+    setOrbitControls,
+}: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setOrbitControls: (x: any) => void;
+    clearColor: string;
+    viewId: number;
+    label: string;
+    children: ReactNode;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    controlsProps: any;
+    orbitControls: OrbitControlsImpl | null;
+    cameraControlsContainer: HTMLDivElement | null;
+}): JSX.Element {
+    useFrame(({ gl, scene, camera }) => {
+        gl.render(scene, camera);
+        // console.log(store.getState().aliceData.trackCount);
+        window.kkk = performance.now();
+    }, 1);
+
+    return (
+        <>
+            <color attach="background" args={[clearColor]} />
+            <ScreenshotManager viewId={viewId} label={label} />
+            {cameraControlsContainer && orbitControls && (
+                <CameraManager
+                    cameraControlsContainer={cameraControlsContainer}
+                    orbitControls={orbitControls}
+                />
+            )}
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+            <OrbitControls ref={setOrbitControls} {...controlsProps} />
+            {children}
+        </>
+    );
+}
+
 function GenericView({ viewId, label, controlsProps, className, children }: Props): JSX.Element {
     const dispatch = useAppDispatch();
 
@@ -90,19 +134,19 @@ function GenericView({ viewId, label, controlsProps, className, children }: Prop
                 </button>
             </div>
             <Canvas linear frameloop="demand" gl={rendererProps} onCreated={onCreated}>
-                <color attach="background" args={[style.clearColor]} />
                 <ContextBridge>
-                    <ScreenshotManager viewId={viewId} label={label} />
-                </ContextBridge>
-                {cameraControlsContainer && orbitControls && (
-                    <CameraManager
+                    <Inside
                         cameraControlsContainer={cameraControlsContainer}
+                        clearColor={style.clearColor}
+                        controlsProps={controlsProps}
+                        label={label}
                         orbitControls={orbitControls}
-                    />
-                )}
-                {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-                <OrbitControls ref={setOrbitControls} {...controlsProps} />
-                {children}
+                        setOrbitControls={setOrbitControls}
+                        viewId={viewId}
+                    >
+                        {children}
+                    </Inside>
+                </ContextBridge>
             </Canvas>
         </ViewStyles>
     );
